@@ -1,4 +1,29 @@
 @include('admin/templates/header')  
+<style>
+       .pagination {
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+    .pagination > .page-item > .page-link {
+        color: #6c757d;
+        background-color: #ffffff;
+        border: 1px solid #dee2e6;
+    }
+
+    .pagination > .page-item > .page-link:hover {
+        color: #007bff;
+        background-color: #e9ecef;
+        border-color: #dee2e6;
+    }
+
+    .pagination > .page-item.active > .page-link {
+        z-index: 3;
+        color: #ffffff;
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+</style>
 <div class="container-fluid pt-4 px-4">
     <div class="bg-light text-center rounded p-4">
         <div class="d-flex align-items-center justify-content-between mb-4">
@@ -37,6 +62,7 @@
                 </tbody>
             </table>
         </div>
+            {{ $teachers->links() }}
     </div>
 </div>
 

@@ -39,7 +39,7 @@ class ViewController extends Controller
     }
 
     public function manage_teachers(){
-        $teachers = Teacher::get();
+        $teachers = Teacher::paginate(10);
         return view('admin/pages/teachers', compact('teachers'));
     }
 
