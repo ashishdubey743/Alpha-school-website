@@ -5,12 +5,14 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Requests\contactRequest;
 use App\Http\Requests\signinRequest;
+use App\Http\Requests\taskRequest;
 use App\Http\Requests\addTeacherRequest;
 use App\Http\Requests\editTeacherRequest;
 use App\Models\Contact;
 use App\Models\User;
 use App\Models\Upload;
 use App\Models\Teacher;
+use App\Models\Task;
 
 use App\Mail\thankyou as thankyouEmail;
 use Illuminate\Support\Facades\Mail;
@@ -72,9 +74,33 @@ class FunctionController extends Controller
         }
     }
 
+    public function delete_query(Request $request){
+        $id = $request->input('id');
+        $query = Contact::find($id);
+    
+        if($query){
+            $query->delete();
+            return response()->json(['success' => true, 'message' => 'Query deleted successfully']);
+        } else {
+            return response()->json(['success' => false, 'message' => 'Query not found']);
+        }
+    }
+
+    public function delete_task(Request $request){
+        $id = $request->input('id');
+        $task = Task::find($id);
+    
+        if($task){
+            $task->delete();
+            return response()->json(['success' => true, 'message' => 'Task deleted successfully']);
+        } else {
+            return response()->json(['success' => false, 'message' => 'Task not found']);
+        }
+    }
+
     public function edit_teacher_process(editTeacherRequest $request){
         $teacher = Teacher::where(['email' => $request->input('email')])->first();
-        if($teacher){
+        if($teacher && $teacher->name != $request->input('name')){
             return back()->withErrors(['email'=> 'Email already exist']);
         }
         else{
@@ -90,6 +116,39 @@ class FunctionController extends Controller
                 ]);
                 return redirect('manage-teachers');
             }
+        }
+    }
+
+    public function edit_task_process(taskRequest $request){
+            $task = Task::where(['id' => $request->input('id')])->first();
+            if($task)
+            {
+                $task->update([
+                    'taskname' => $request->input('taskname'),
+                    'duedate' => $request->input('duedate'),
+                    'subject' => $request->input('subject'),
+                    'room' => $request->input('room'),
+                    'assigned' => $request->input('assigned'),
+                    'status' => $request->input('status'),
+                ]);
+                return redirect('manage-tasks');
+            }
+    }
+
+    public function add_task_process(taskRequest $request){
+        $task = Task::where(['taskname' => $request->input('taskname'), 'assigned' => $request->input('assigned')])->first();
+        if($task) return back()->withErrors([ 'message' => ucfirst($request->input('taskname')).' is already assigned to  '.$request->input('assigned') ]);
+        else
+        {
+            $task = Task::create([
+                'taskname' => $request->input('taskname'),
+                'duedate' => $request->input('duedate'),
+                'subject' => $request->input('subject'),
+                'room' => $request->input('room'),
+                'assigned' => $request->input('assigned'),
+                'status' => $request->input('status'),
+            ]);
+            if($task) return redirect('manage-tasks');
         }
     }
 }

@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Teacher;
+use App\Models\Contact;
+use App\Models\Task;
 
 
 class ViewController extends Controller
@@ -44,19 +46,33 @@ class ViewController extends Controller
     }
 
     public function manage_queries(){
-        return view('admin/pages/queries');
+        $queries = Contact::paginate(10);
+        return view('admin/pages/queries', compact('queries'));
     }
 
     public function manage_tasks(){
-        return view('admin/pages/tasks');
+        $tasks = Task::paginate(10);
+        return view('admin/pages/tasks', compact('tasks'));
     }
 
     public function add_teacher(){
+        $teachers = Teacher::get();
         return view('admin/pages/add-teacher');
+    }
+
+    public function add_task(){
+        $teachers = Teacher::get();
+        return view('admin/pages/add-task', compact('teachers'));
     }
 
     public function edit_teacher($id){
         $teacher = Teacher::find($id);
         return view('admin/pages/edit-teacher', compact('teacher'));
+    }
+
+    public function edit_task($id){
+        $task = Task::find($id);
+        $teachers = Teacher::get();
+        return view('admin/pages/edit-task', compact('task','teachers'));
     }
 }
