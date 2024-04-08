@@ -27,8 +27,8 @@
 <div class="container-fluid pt-4 px-4">
     <div class="bg-light text-center rounded p-4">
         <div class="d-flex align-items-center justify-content-between mb-4">
-            <a href="add-teacher" class="btn btn-primary me-2">Add Teacher</a>
-            <h6 class="mb-0">Teacher Details</h6>
+            <a href="/import-students" class="btn btn-primary me-2">Import Students</a>
+            <h6 class="mb-0">Student Details</h6>
             
         </div>
         <div class="table-responsive">
@@ -38,32 +38,30 @@
                     <tr class="text-dark">
                         <th scope="col"><input class="form-check-input" type="checkbox"></th>
                         <th scope="col">Name</th>
-                        <th scope="col">Subject</th>
+                        <th scope="col">Room</th>
                         <th scope="col">Email</th>
                         <th scope="col">Phone</th>
-                        <th scope="col">Room</th>
+                        <th scope="col">Parent</th>
                         <th scope="col">Action</th>
                     </tr>
                 </thead>
                 <tbody>
-                @foreach ($teachers as $teacher)
+                    @foreach ($students as $student)
                     <tr>
                         <td><input class="form-check-input" type="checkbox"></td>
-                        <td>{{ $teacher->name }}</td>
-                        <td>{{ $teacher->subject }}</td>
-                        <td>{{ $teacher->email }}</td>
-                        <td>{{ $teacher->phone }}</td>
-                        <td>{{ $teacher->room }}</td>
+                        <td>{{ $student->name }}</td>
+                        <td> {{ $student->room }}</td> <td>{{ $student->email }}</td>
+                        <td>{{ $student->phone }}</td>
+                        <td>{{ $student->parent }}</td>
                         <td>
-                            <a href="edit/{{ $teacher->id }}"><button type="button" class="btn btn-sm btn-primary me-1">Edit</button></a>
-                            <button type="button" class="btn btn-sm btn-danger" onClick="delete_teacher({{ $teacher->id }}, this)" >Delete</button>
+                            <a href="edit/student/{{ $student->id }}"><button type="button" class="btn btn-sm btn-primary me-1">Edit</button></a>
+                            <button type="button" class="btn btn-sm btn-danger" onClick="delete_student({{ $student->id }}, this)">Delete</button>
                         </td>
                     </tr>
-                @endforeach
+                    @endforeach
                 </tbody>
             </table>
         </div>
-            {{ $teachers->links() }}
     </div>
 </div>
 

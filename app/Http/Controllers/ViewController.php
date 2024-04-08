@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Teacher;
 use App\Models\Contact;
 use App\Models\Task;
+use App\Models\Student;
 
 
 class ViewController extends Controller
@@ -44,6 +45,10 @@ class ViewController extends Controller
         $teachers = Teacher::paginate(10);
         return view('admin/pages/teachers', compact('teachers'));
     }
+    public function manage_students(){
+        $students = Student::paginate(10);
+        return view('admin/pages/students',compact('students'));
+    }
 
     public function manage_queries(){
         $queries = Contact::paginate(10);
@@ -74,5 +79,9 @@ class ViewController extends Controller
         $task = Task::find($id);
         $teachers = Teacher::get();
         return view('admin/pages/edit-task', compact('task','teachers'));
+    }
+
+    public function import_students(){
+        return view('admin/pages/import-students');
     }
 }
