@@ -12,13 +12,15 @@ use App\Models\Contact;
 use App\Models\User;
 use App\Models\Upload;
 use App\Models\Teacher;
+use App\Models\Student;
 use App\Models\Task;
 
 use App\Mail\thankyou as thankyouEmail;
 use Illuminate\Support\Facades\Mail;
 
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Support\Facades\Validator;
+use Log;
 class FunctionController extends Controller
 {
     public function process_contact(contactRequest $request){
@@ -149,6 +151,90 @@ class FunctionController extends Controller
                 'status' => $request->input('status'),
             ]);
             if($task) return redirect('manage-tasks');
+        }
+    }
+
+    public function import_student_process(Request $request){
+        $validator = Validator::make($request->all(), [
+            'student_file' => 'required|file|mimes:csv,txt',
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator->errors());
+        }
+
+        $uploadedFile = $request->file('student_file');
+        
+        if (!$uploadedFile->isValid()) {
+            return back()->withErrors(['student_file' => 'Invalid file uploaded']);
+        }
+
+        $studentCreated = 0;
+        $errors = [];
+
+        try {
+            
+            $reader = new \SplFileObject($uploadedFile->getRealPath());
+            $reader->setFlags(\SplFileObject::READ_CSV);
+            
+            $headers = $reader->current(); 
+            $reader->next();
+            $firstRowSkipped = false;
+            foreach ($reader as $row) {
+                if ($row[0] == NULL) {
+                    continue; 
+                }
+                Log::debug($row);
+                if (!$firstRowSkipped) {
+                    $firstRowSkipped = true;
+                    continue;
+                }
+                
+                $data = [];
+
+                for ($i = 0; $i < count($headers); $i++) {
+                    $data[$headers[$i]] = $row[$i];
+                }
+
+                $validator = Validator::make($data, [
+                    'name' => 'required',
+                    'email' => 'required', 
+                    'room' => 'required', 
+                    'phone' => 'required', 
+                    'parent' => 'required', 
+                ]);
+
+                if ($validator->fails()) {
+                    
+                    $errors[] = 'Line ' . ($reader->key() + 1) . ' - ' . $validator->errors()->first();
+                    continue;
+                }
+                $student = Student::where(['email' => $data['email']])->first();
+                if($student){
+                    $student->update([
+                        'name' => $data['name'],
+                        'email' => $data['email'],
+                        'room' => $data['room'],
+                        'phone' => $data['phone'],
+                        'parent' => $data['parent']
+                    ]);
+                }else{
+                    $student = Student::create([
+                        'name' => $data['name'],
+                        'email' => $data['email'],
+                        'room' => $data['room'],
+                        'phone' => $data['phone'],
+                        'parent' => $data['parent']
+                    ]);
+                }
+                $studentCreated++;
+              
+            }
+            $message = $studentCreated > 0 ? 'Successfully imported students.' : 'No valid users found in the uploaded file.';
+            
+            return back()->with('message', $message);
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => 'An error occurred during upload: ' . $e->getMessage()]);
         }
     }
 }
