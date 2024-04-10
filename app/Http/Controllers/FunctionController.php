@@ -8,6 +8,7 @@ use App\Http\Requests\signinRequest;
 use App\Http\Requests\taskRequest;
 use App\Http\Requests\addTeacherRequest;
 use App\Http\Requests\editTeacherRequest;
+use App\Http\Requests\editStudentRequest;
 use App\Models\Contact;
 use App\Models\User;
 use App\Models\Upload;
@@ -97,6 +98,18 @@ class FunctionController extends Controller
             return response()->json(['success' => true, 'message' => 'Task deleted successfully']);
         } else {
             return response()->json(['success' => false, 'message' => 'Task not found']);
+        }
+    }
+
+    public function delete_student(Request $request){
+        $id = $request->input('id');
+        $student = Student::find($id);
+    
+        if($student){
+            $student->delete();
+            return response()->json(['success' => true, 'message' => 'Student deleted successfully']);
+        } else {
+            return response()->json(['success' => false, 'message' => 'Student not found']);
         }
     }
 
@@ -235,6 +248,36 @@ class FunctionController extends Controller
             return back()->with('message', $message);
         } catch (\Exception $e) {
             return back()->withErrors(['error' => 'An error occurred during upload: ' . $e->getMessage()]);
+        }
+    }
+
+    public function edit_student_process(editStudentRequest $request){
+        $student = Student::where(['id' => $request->input('id')])->first();
+        if($student && $student->email != $request->input('email')){
+            return back()->withErrors(['email'=> 'Email already exist']);
+        }
+        else{
+            $student = Student::where(['id' => $request->input('id')])->first();
+            if($student)
+            {
+                $student->update([
+                    'name' => $request->input('name'),
+                    'room' => $request->input('room'),
+                    'email' => $request->input('email'),
+                    'phone' => $request->input('phone'),
+                    'parent' => $request->input('parent')
+                ]);
+                return redirect('/manage-students');
+            }
+        }
+    }
+
+    public function bulk_delete(Request $request){
+        $ids = $request->input('ids');
+        if($ids)
+        {
+            Student::destroy($ids);
+            return response()->json(['success' => true, 'message' => ' Selected Students deleted successfully']);
         }
     }
 }

@@ -75,6 +75,11 @@ class ViewController extends Controller
         return view('admin/pages/edit-teacher', compact('teacher'));
     }
 
+    public function edit_student($id){
+        $student = Student::find($id);
+        return view('admin/pages/edit-student', compact('student'));
+    }
+
     public function edit_task($id){
         $task = Task::find($id);
         $teachers = Teacher::get();

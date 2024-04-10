@@ -106,3 +106,73 @@ function delete_task(id, ref){
         }
     });
 }
+
+function delete_student(id, ref){
+    $.ajax({
+        url: '/delete_student',
+        type: 'POST',
+        dataType: 'json',
+        data:{
+            id:id,
+            "_token": $('#token').val()
+        },
+        success: function(data) {
+            ref.closest('tr').remove();
+        }
+    });
+}
+
+
+
+function bulk_delete(){
+    if(document.querySelectorAll('.check-input-single')){
+        let idsArray = [];
+    
+        document.querySelectorAll('.check-input-single').forEach(function(input) {
+        if (input.checked) {
+            idsArray.push(input.value);
+        }
+        input.onclick = function() {
+                const valueToRemove = input.value;
+                const index = idsArray.indexOf(valueToRemove);
+                if (index > -1) {
+                idsArray.splice(index, 1);
+                } else if (input.checked) {
+                idsArray.push(input.value);
+                }
+            };
+        });
+        
+        $.ajax({
+            url: '/bulk_delete',
+            type: 'POST',
+            dataType: 'json',
+            data: {
+              ids: idsArray,
+              "_token": $('#token').val()
+            },
+            success: function(data) {
+              if (data.success) {
+                document.querySelectorAll('.form-check-input').forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+                const messageContainer = document.createElement('div');
+                messageContainer.classList.add('alert', 'alert-success');
+                messageContainer.textContent = data.message; 
+          
+                const targetElement = document.querySelector('.container-fluid.pt-4.px-4'); 
+                targetElement.insertBefore(messageContainer, targetElement.firstChild);
+          
+                idsArray.forEach(function(id) {
+                  ref = document.querySelector('[value="' + id + '"]');
+                  ref.closest('tr').remove();
+                });
+              } else {
+                console.error(data.message); 
+              }
+            }
+          });
+          
+    }
+    
+}

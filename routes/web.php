@@ -13,6 +13,7 @@ Route::get('vehicle', [ViewController::class, 'vehicle']);
 Route::get('contact', [ViewController::class, 'contact']);
 Route::get('edit/{teacherid}', [ViewController::class, 'edit_teacher']);
 Route::get('edit-task/{taskid}', [ViewController::class, 'edit_task']);
+Route::get('edit-student/{studentid}', [ViewController::class, 'edit_student']);
 Route::get('/import-students', [ViewController::class, 'import_students']);
 
 
@@ -34,8 +35,11 @@ Route::get('/add-task', [ViewController::class, 'add_task']);
 Route::post('process_contact', [FunctionController::class, 'process_contact']);
 Route::post('/add_teacher_process', [FunctionController::class, 'add_teacher_process']);
 Route::post('/add_task_process', [FunctionController::class, 'add_task_process']);
+Route::post('/edit_student_process', [FunctionController::class, 'edit_student_process']);
 Route::post('/edit_task_process', [FunctionController::class, 'edit_task_process']);
 Route::post('/edit_teacher_process', [FunctionController::class, 'edit_teacher_process']);
 Route::post('/delete_query', [FunctionController::class, 'delete_query']);
 Route::post('/delete_task', [FunctionController::class, 'delete_task']);
+Route::post('/delete_student', [FunctionController::class, 'delete_student']);
 Route::post('/import_student_process', [FunctionController::class, 'import_student_process']);
+Route::post('/bulk_delete', [FunctionController::class, 'bulk_delete']);
