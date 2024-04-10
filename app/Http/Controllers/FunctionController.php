@@ -22,6 +22,8 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Log;
+use Barryvdh\DomPDF\Facade\Pdf;
+
 class FunctionController extends Controller
 {
     public function process_contact(contactRequest $request){
@@ -280,4 +282,66 @@ class FunctionController extends Controller
             return response()->json(['success' => true, 'message' => ' Selected Students deleted successfully']);
         }
     }
+
+    public function exportStudentsCsv(Request $request)
+    {
+        $currentPage = $request->input('page', 1);
+    
+        $students = Student::paginate(10, ['*'], 'page', $currentPage);
+    
+        $headers = [
+            'Name', 'Room', 'Email', 'Phone', 'Parent'
+        ];
+    
+        $csvData = [];
+    
+        foreach ($students as $student) {
+            $csvData[] = [
+                $student->name,
+                $student->room,
+                $student->email,
+                $student->phone,
+                $student->parent,
+            ];
+        }
+    
+        $csv = implode("\n", array_merge([implode(',', $headers)], array_map(function ($row) {
+            return implode(',', $row);
+        }, $csvData)));
+    
+        $response = response($csv, 200, [
+            'Content-Type' => 'text/csv; charset=utf-8',
+            'Content-Disposition' => 'attachment; filename=students_page_' . $currentPage . '.csv',
+        ]);
+    
+        return $response;
+    }
+    
+    public function exportStudentsPdf(Request $request)
+{
+    $currentPage = $request->input('page', 1);
+
+    $students = Student::paginate(10, ['*'], 'page', $currentPage);
+
+    $headers = [
+        'Name', 'Room', 'Email', 'Phone', 'Parent'
+    ];
+
+    $data = [];
+
+    foreach ($students as $student) {
+        $data[] = [
+            'name' => $student->name,
+            'room' => $student->room,
+            'email' => $student->email,
+            'phone' => $student->phone,
+            'parent' => $student->parent,
+        ];
+    }
+
+    $pdf = PDF::loadView('pdf/students', compact('headers', 'data', 'currentPage')); // Use compact helper for cleaner syntax
+
+    return $pdf->download('students_page_' . $currentPage . '.pdf');
+}
+
 }

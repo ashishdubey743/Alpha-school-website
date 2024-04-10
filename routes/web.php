@@ -43,3 +43,6 @@ Route::post('/delete_task', [FunctionController::class, 'delete_task']);
 Route::post('/delete_student', [FunctionController::class, 'delete_student']);
 Route::post('/import_student_process', [FunctionController::class, 'import_student_process']);
 Route::post('/bulk_delete', [FunctionController::class, 'bulk_delete']);
+Route::get('/students/export/csv/{page}', [FunctionController::class, 'exportStudentsCsv']);
+Route::get('/students/export/pdf/{page}', [FunctionController::class, 'exportStudentsPdf']);
+

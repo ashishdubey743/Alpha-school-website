@@ -34,8 +34,8 @@
                 Export
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="exportDropdown">
-                <li><a class="dropdown-item" href="/export/students/csv">Export CSV</a></li>
-                <li><a class="dropdown-item" href="/export/students/pdf">Export PDF</a></li>
+                <li><a class="dropdown-item" href="/students/export/csv/{{ $students->currentPage() }}">Export CSV (Current Page)</a></li>
+                <li><a class="dropdown-item" href="/students/export/pdf/{{ $students->currentPage() }}">Export PDF</a></li>
                 </ul>
             </div>
             <h6 class="mb-0">Student Details</h6>  
@@ -45,7 +45,7 @@
             <table class="table text-start align-middle table-bordered table-hover mb-0">
                 <thead>
                     <tr class="text-dark">
-                        <th scope="col"><input class="form-check-input check-input-all" type="checkbox"></th>
+                        <th scope="col">#</th>
                         <th scope="col">Name</th>
                         <th scope="col">Room</th>
                         <th scope="col">Email</th>
